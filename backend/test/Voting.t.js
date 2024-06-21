@@ -379,4 +379,24 @@ describe("Voting contract", function () {
         .withArgs(WorkflowStatus.VotingSessionEnded, WorkflowStatus.VotesTallied);
     });
   });
+
+  describe("security test", function () {
+    it("Should not possible to reach out of gas limit with adding many proposals", async function () {
+      try{
+        await _setVotingToStartProposal();
+        for (let i = 0; i < 3000; i++) {
+            await voting.connect(voter1).addProposal("New proposal " + i);
+        }
+        await _setVotingFromStartProposalToEndProposal();
+        await voting.startVotingSession();
+        await voting.endVotingSession();
+
+        await voting.tallyVotes();
+
+        expect(await voting.winningProposalID()).to.equal(0);
+      }catch(error){
+        expect.fail("Expected nor error encounterer but one is catched : " + error.message);
+      }
+    });
+  });
 });
