@@ -22,8 +22,8 @@ export default function RootLayout({ children }) {
       <body className={`${inter.className} flex flex-col min-h-screen`}>
         <CustomRainbowKitProvider>
           <div className="flex flex-col flex-grow min-h-screen">
-            <Header />
-            <main className="flex-grow container mx-auto p-4">
+            <Header /> 
+            <main className="flex flex-col flex-grow items-center justify-center bg-gray-100">
               {children}
             </main>
             <Footer />
