@@ -18,7 +18,7 @@ const UserRole = ({ ownerAddress, voters }) => {
   return (
     <div className="mt-4 p-4 bg-gray-100 rounded-md shadow-md">
       <h3 className="text-xl font-semibold">Your Role</h3>
-      <p className="text-lg">{role}</p>
+      <p className="text-lg text-center">{role}</p>
     </div>
   );
 };

@@ -1,11 +1,13 @@
 
 'use client';
-import Voting from "../components/shared/Voting"
 import NotConnected from "@/components/shared/NotConnected";
 import ProgressBar from "@/components/shared/ProgressBar";
+import Proposal from "@/components/shared/Proposal";
+import Voting from "../components/shared/Voting"
 import UserRole from "@/components/shared/UserRole";
 import { contractAddress, contractAbi } from '../constant/index';
 import { useAccount, useReadContract } from "wagmi";
+
 
 const contractConfig = {
   address: contractAddress,
@@ -48,7 +50,12 @@ export default function Home() {
   return (
     <>
       {isConnected ? (
-        <><ProgressBar currentStep={workflowStatus} /><UserRole ownerAddress={ownerAddress} voters={AllVoters}/><Voting /></>
+        <>
+          <ProgressBar currentStep={workflowStatus} />
+          <UserRole ownerAddress={ownerAddress} voters={AllVoters}/>
+          <Proposal />
+          <Voting />
+        </>
       ) : (
         <NotConnected />
       )}
