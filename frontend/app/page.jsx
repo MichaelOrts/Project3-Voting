@@ -35,15 +35,12 @@ export default function Home() {
   });
   
 
-
-  
-
   if (isWorkflowStatusError || isOwnerError || isGetAllVotersError) {
     // Handle error
     return <div>Something went wrong</div>;
   }
 
-  const workflowStatus = workflowStatusData || 0;
+  const workflowStatus = workflowStatusData || 1;
   const AllVoters = getAllVoters || [];
 
 
@@ -52,9 +49,31 @@ export default function Home() {
       {isConnected ? (
         <>
           <ProgressBar currentStep={workflowStatus} />
-          <UserRole ownerAddress={ownerAddress} voters={AllVoters}/>
-          <Proposal />
-          <Voting />
+          <UserRole ownerAddress={ownerAddress} voters={AllVoters} />
+          {workflowStatus === 1 && (
+            // Registering Voters
+            <div>Registering Voters</div>
+          )}
+          {workflowStatus === 2 && (
+            // Proposals Registration Started
+            <Proposal />
+          )}
+          {workflowStatus === 3 && (
+            // Proposals Registration Ended
+            <div>Proposals Registration Ended</div>
+          )}
+          {workflowStatus === 4 && (
+            // Voting Session Started
+            <Voting />
+          )}
+          {workflowStatus === 5 && (
+            // Voting Session Ended
+            <div>Voting Session Ended</div>
+          )}
+          {workflowStatus === 6 && (
+            // Votes Tallied
+            <div>Votes Tallied</div>
+          )}
         </>
       ) : (
         <NotConnected />
