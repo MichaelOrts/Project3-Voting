@@ -7,6 +7,7 @@ const steps = [
   { name: 'Proposals Registration Ended', status: 3 },
   { name: 'Voting Session Started', status: 4 },
   { name: 'Voting Session Ended', status: 5 },
+  { name: 'Votes Tallied', status: 6 },
 ];
 
 const ProgressBar = ({ currentStep }) => {
@@ -22,7 +23,7 @@ const ProgressBar = ({ currentStep }) => {
               <div className={`flex-grow h-1 ml-2 ${currentStep > step.status ? 'bg-blue-500' : 'bg-gray-300'}`} />
             )}
           </div>
-          <div className="text-sm">{step.name}</div>
+           <div className="text-sm whitespace-nowrap">{step.name}</div>
         </div>
       ))}
     </div>
