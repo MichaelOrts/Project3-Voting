@@ -8,12 +8,20 @@ import { parseAbi } from "viem";
 import { hardhatClient as publicClient } from "@/utils/client";
 
 import Event from "./Event";
+import VotingStates from "./VotingStates";
 
 const Voting = () => {
 
     const { address } = useAccount();
 
     const [events, setEvents] = useState([]);
+
+    const { data: workflowStatus, refetch } = useReadContract({
+        address: contractAddress,
+            abi: contractAbi,
+            functionName: 'workflowStatus',
+            account: address
+    })
 
     const {data: hash, error, isPending: setIsPending, writeContract } = useWriteContract({
         /* mutation: {
@@ -95,6 +103,7 @@ const Voting = () => {
                     )
                 })}
             </div>
+            <VotingStates currentState={workflowStatus}/>
         </div>
     )
 }
