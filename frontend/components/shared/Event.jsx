@@ -4,13 +4,34 @@ import {
 import { Badge } from "@/components/ui/badge"
 
 const Event = ({ event }) => {
+  function showParam(name, value) {
+    if(value){
+      return (
+        <div>
+          <p className="ml-2">{name} : <span className="font-bold">{value}</span></p>
+        </div>
+      )
+    }
+  }
+
+  function getColor(name) {
+    switch(name){
+      case "VoterRegistered": return "bg-purple-500";
+      case "WorkflowStatusChange": return "bg-red-500";
+      case "ProposalRegistered": return "bg-blue-500";
+      case "Voted": return "bg-green-500";
+      default: return "bg-grey-500";
+    }
+  }
+
   return (
     <Card className="p-4 mb-2">
         <div className="flex items-center">
-            <Badge className="bg-lime-500">event.name</Badge>
-            <p className="ml-2">Old Value : <span className="font-bold">{event.oldValue}</span></p>
-            <p className='ml-2 mr-2'>|</p> 
-            <p>New Value : <span className="font-bold">{event.newValue}</span></p>
+            <Badge className={getColor(event.name)}>{event.name}</Badge>
+            {showParam('Voter', event.voter)}
+            {showParam('Previous Status', event.previousStatus)}
+            {showParam('New Status', event.previousStatus)}
+            {showParam('Proposal Id', event.proposalId)}
         </div>
     </Card>
   )

@@ -1,5 +1,9 @@
+import Voting from "../components/shared/Voting"
+
 export default function Home() {
   return (
-    <div></div>
+    <div>
+      <Voting />
+    </div>
   );
 }

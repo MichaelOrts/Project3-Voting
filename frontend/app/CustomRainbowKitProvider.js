@@ -6,7 +6,7 @@ import {
 } from '@rainbow-me/rainbowkit';
 import { WagmiProvider } from 'wagmi';
 import {
-  sepolia
+  hardhat
 } from 'wagmi/chains';
 import {
   QueryClientProvider,
@@ -16,7 +16,7 @@ import {
 const config = getDefaultConfig({
     appName: 'Project Voting',
     projectId: '4b89f8ce0af198f46977dc74b4aaba58',
-    chains: [sepolia],
+    chains: [hardhat],
     ssr: true, 
 });
 
