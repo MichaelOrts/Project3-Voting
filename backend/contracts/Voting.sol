@@ -37,6 +37,8 @@ contract Voting is Ownable {
     Proposal[] proposalsArray;
     mapping(address => Voter) voters;
     uint public winningProposalID;
+    uint private maxVoteCount;
+    uint[] private leadingProposals;
 
     /*************************************
      *              Events                *
@@ -151,6 +153,15 @@ contract Voting is Ownable {
         voters[msg.sender].hasVoted = true;
         proposalsArray[_id].voteCount++;
 
+        // Handle tie vote and compute the winning proposal
+        if (proposalsArray[_id].voteCount > maxVoteCount) {
+            maxVoteCount = proposalsArray[_id].voteCount;
+            winningProposalID = _id;
+            leadingProposals = [_id];
+        } else if (proposalsArray[_id].voteCount == maxVoteCount) {
+            leadingProposals.push(_id);
+        }
+
         emit Voted(msg.sender, _id);
     }
 
@@ -233,16 +244,11 @@ contract Voting is Ownable {
             workflowStatus == WorkflowStatus.VotingSessionEnded,
             "Current status is not voting session ended"
         );
-        uint _winningProposalId;
-        for (uint256 p = 0; p < proposalsArray.length; p++) {
-            if (
-                proposalsArray[p].voteCount >
-                proposalsArray[_winningProposalId].voteCount
-            ) {
-                _winningProposalId = p;
-            }
+
+        // Handle tie vote: Choose the last one in the leading proposals list
+        if (leadingProposals.length > 1) {
+            winningProposalID = leadingProposals[leadingProposals.length - 1];
         }
-        winningProposalID = _winningProposalId;
 
         workflowStatus = WorkflowStatus.VotesTallied;
         emit WorkflowStatusChange(
