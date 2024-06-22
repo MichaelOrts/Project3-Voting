@@ -1,5 +1,6 @@
 'use client';
 import React, { useEffect, useState } from 'react';
+import NextWorkflowButton from '@/components/shared/NextWorkflowButton';
 import NotConnected from "@/components/shared/NotConnected";
 import ProgressBar from "@/components/shared/ProgressBar";
 import Proposal from "@/components/shared/Proposal";
@@ -47,20 +48,23 @@ export default function Home() {
   const allVoters = votersAddress || [];
   const isOwner = ownerAddress === currentAddress;
   const isVoter = allVoters.includes(currentAddress);
-
+  
   return (
     <>
       {isConnected ? (
         <>
           <div className="container">
-            <ProgressBar currentStep={workflowStatus} />
+            <ProgressBar workflowStatus={workflowStatus} />
             <UserRole voterAddress={currentAddress} isOwner={isOwner} isVoter={isVoter} />
+            <p className='flex justify-center'>
+              {isOwner && <NextWorkflowButton workflowStatus={workflowStatus} />}
+            </p>
             <div className="flex flex-row justify-center my-24 space-x-20">
               <div className="w-3/6 bg-white p-4 rounded-lg shadow-xl">
-                {isOwner && <RegisterVoter isOwner={isOwner} />}
+                <RegisterVoter isOwner={isOwner} workflowStatus={workflowStatus} />
               </div>
               <div className="w-3/6 bg-white p-4 rounded-lg shadow-xl">
-                {isVoter && <Proposal isVoter={isVoter} />}
+                <Proposal isVoter={isVoter} workflowStatus={workflowStatus} />
               </div>
             </div>
             {workflowStatus === 5 && (

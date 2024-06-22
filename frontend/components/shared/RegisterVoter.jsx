@@ -7,7 +7,7 @@ import { Button } from '../../components/ui/button';
 import useVoters from '@/hooks/useVoters';
 
 
-const RegisterVoter = ({isOwner}) => {
+const RegisterVoter = ({isOwner, workflowStatus}) => {
   const [voterAddress, setVoterAddress] = useState();
   const [status, setStatus] = useState('');
   const { votersAddress } = useVoters();
@@ -20,31 +20,31 @@ const RegisterVoter = ({isOwner}) => {
     try {
       isConfirming = true;
       await writeContract({
-      address: contractAddress,
-      abi: contractAbi,
-      functionName: 'addVoter',
-      args: [voterAddress],
+        address: contractAddress,
+        abi: contractAbi,
+        functionName: 'addVoter',
+        args: [voterAddress],
       });
       
       setStatus('Voter added successfully');
       setVoterAddress('');
       isConfirming = false;
     } catch (error) {
-        console.log('error', error);
       setStatus(`Error: ${error.message}`);
+      isConfirming = false;
     }
   };
 
   return (
     <div className="flex flex-col items-center">
-      <h2 className="text-xl font-bold mb-2 mt-4">Registered Voters</h2>
+      <h2 className="text-xl font-bold mb-2 mt-4">Voters</h2>
       <ul className="list-disc m-2 pl-5">
         {votersAddress.map((voter, index) => (
           <li key={index} className="text-gray-700">{voter}</li>
         ))}
       </ul>
 
-      {isOwner ? (
+      {isOwner && workflowStatus === 0 ? (
         <>
         <Input 
         type="text" 
@@ -63,7 +63,10 @@ const RegisterVoter = ({isOwner}) => {
         {status && <p className="mt-2 text-sm text-green-500">{status}</p>}
       </>
       ) : (
-        <></>
+         <>
+         {workflowStatus != 0 && <p className='text-red-500'>Adding register voters is currently closed</p>}
+         {!isOwner && <p className='text-red-500'>Only the owner can add voters</p>}
+        </>
       )}
     </div>
   );

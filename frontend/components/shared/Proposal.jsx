@@ -1,55 +1,51 @@
 'use client';
-import { useState, useEffect } from 'react';
-import { useWriteContract, useWaitForTransactionReceipt, useAccount, useReadContract } from 'wagmi';
+import { useState } from 'react';
+import { useWriteContract } from 'wagmi';
 import { contractAddress, contractAbi } from '@/constant';
 import { Input } from '../../components/ui/input';
 import { Button } from '../../components/ui/button';
 
-const Proposal = ({isVoter}) => {
-  const [proposal, setProposal] = useState('');
+import useProposals from '@/hooks/useProposals';
+import useVotes from '@/hooks/useVotes';
+
+const Proposal = ({isVoter, workflowStatus}) => {
+  const [proposal, setProposal] = useState();
   const [status, setStatus] = useState('');
-  const [allProposals, setAllProposals] = useState([]);
+  const { proposals } = useProposals();
+  const { votes } = useVotes();
 
-  const { data: proposalsData, isError: isProposalsError } = useReadContract({
-    address: contractAddress,
-    abi: contractAbi,
-    functionName: 'getAllProposals',
-  });
+  const { writeContract } = useWriteContract()
 
-  const { data: hash, error, isPending: setIsPending, writeContract } = useWriteContract({
-    address: contractAddress,
-    abi: contractAbi,
-    functionName: 'addProposal',
-    args: [proposal]
-  });
-
-  const { isLoading: isConfirming, isSuccess, error: errorConfirmation } = useWaitForTransactionReceipt({ hash });
-
-  useEffect(() => {
-    if (proposalsData) {
-      setAllProposals(proposalsData);
-    }
-  }, [proposalsData]);
+  let isConfirming = false;
 
   const handleAddProposal = async () => {
     try {
-      await writeContract();
+      isConfirming = true;
+      await writeContract({
+        address: contractAddress,
+        abi: contractAbi,
+        functionName: 'addProposal',
+        args: [proposal]
+      });
       setStatus('Proposal added successfully');
+      setProposal('');
+      isConfirming = false;
     } catch (error) {
       setStatus(`Error: ${error.message}`);
+      isConfirming = false;
     }
   };
 
   return (
     <div className="flex flex-col items-center">
-      <h2 className="text-xl font-bold mb-2 mt-4">All Proposals</h2>
+      <h2 className="text-xl font-bold mb-2 mt-4">Proposals</h2>
       <ul className="list-disc pl-5">
-        {allProposals.map((proposal, index) => (
+        {proposals.map((proposal, index) => (
           <li key={index} className="text-gray-700">{proposal.description} - Votes: {proposal.voteCount}</li>
         ))}
       </ul>
 
-        {isVoter ? (
+        {isVoter && workflowStatus === 1 ? (
             <>
         <Input 
             type="text" 
@@ -68,7 +64,10 @@ const Proposal = ({isVoter}) => {
         {status && <p className="mt-2 text-sm text-green-500">{status}</p>}
         </>
         ) : (
-           <></>
+           <>
+            {workflowStatus != 1 && <p className='text-red-500'>Adding proposals is currently closed</p>}
+            {!isVoter && <p className='text-red-500'>Only voters can add proposals</p>}
+           </>
         )}
     </div>
   );
