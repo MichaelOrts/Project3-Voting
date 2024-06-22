@@ -1,26 +1,29 @@
 import React, { useEffect, useState } from 'react';
-import { useAccount } from 'wagmi';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 
-const UserRole = ({ ownerAddress, voters }) => {
-  const { address } = useAccount();
+const UserRole = ({ isOwner, isVoter }) => {
   const [role, setRole] = useState('');
 
   useEffect(() => {
-    if (address === ownerAddress) {
-      setRole('Owner');
-    } else if (voters.includes(address)) {
-      setRole('Voter');
+    if (isOwner) {
+      setRole('Owner 😎');
+    } else if (isVoter) {
+      setRole('Voter 😊');
     } else {
-      setRole('No Role');
+      setRole('No Role 😢');
     }
-  }, [address, ownerAddress, voters]);
+  }, [isOwner, isVoter]);
 
   return (
-    <div className="mt-4 p-4 bg-gray-100 rounded-md shadow-md">
-      <h3 className="text-xl font-semibold">Your Role</h3>
-      <p className="text-lg text-center">{role}</p>
-    </div>
-  );
+    <Card className="my-4 px-52 bg-gray-100 rounded-md shadow-2xl border-solid border-2 border-blue-400">
+      <CardHeader>
+        <CardTitle className="text-xl font-semibold">Your Role</CardTitle>
+      </CardHeader>
+      <CardContent className="text-lg text-center">
+        {role}
+      </CardContent>
+    </Card> 
+  );   
 };
 
 export default UserRole;
