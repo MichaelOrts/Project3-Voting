@@ -2,10 +2,10 @@ import {
     Card
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Label } from "@/components/ui/label"
 
 import { contractAddress, contractAbi } from "@/constant";
 import { useReadContract, useAccount } from "wagmi";
-import { useState, useEffect } from "react";
 
 const Voter = ({ voterAddress }) => {
 
@@ -24,10 +24,21 @@ const Voter = ({ voterAddress }) => {
 
   return (
     <Card className="p-4 mb-2">
-        <div className="flex items-center">
-            <Badge className="bg-white-900">{voterAddress}</Badge>
-            <p className="ml-2">hasVoted : <span className="font-bold">{voter?.hasVoted.toString()}</span></p>
-            <p className="ml-2">votedProposalId : <span className="font-bold">{voter?.votedProposalId?.toString()}</span></p>
+        <div className="flex">
+            <Badge className="bg-yellow-200 flex-col items-start">
+                <div>
+                    <Label className="ml-4">Address</Label>
+                    <Label className="ml-4 mr-4 font-bold">{voterAddress}</Label>
+                </div>
+                <div>
+                    <Label className="ml-4">Has Voted</Label>
+                    <Label className="ml-4 mr-4 font-bold">{voter?.hasVoted.toString()||"false"}</Label>
+                </div>
+                <div>
+                    <Label className="ml-4">Voted Proposal Id</Label>
+                    <Label className="ml-4 mr-4 font-bold">{voter?.votedProposalId?.toString()||0}</Label>
+                </div>
+            </Badge>
         </div>
     </Card>
   )
