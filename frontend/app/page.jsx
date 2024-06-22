@@ -6,6 +6,7 @@ import Proposal from "@/components/shared/Proposal";
 import RegisterVoter from "@/components/shared/RegisterVoter";
 import Voting from "../components/shared/Voting"
 import UserRole from "@/components/shared/UserRole";
+import WinningProposal from "@/components/shared/WinningProposal";
 import { contractAddress, contractAbi } from '../constant/index';
 import { useAccount, useReadContract } from "wagmi";
 
@@ -65,7 +66,7 @@ export default function Home() {
       case 5:
         return <div>Voting Session Ended</div>;
       case 6:
-        return <div>Votes Tallied</div>;
+        return <WinningProposal />;
       default:
         return null;
     }
