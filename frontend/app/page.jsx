@@ -42,8 +42,8 @@ export default function Home() {
     return <div>Something went wrong</div>;
   }
 
-  //const workflowStatus = workflowStatusData || 1;
-  const workflowStatus = 1;
+  //const workflowStatus = workflowStatusData || 0;
+  const workflowStatus = 0;
   //const AllVoters = getAllVoters || [];
   const AllVoters = [];
   //const isOwner = ownerAddress === useAccount().address;
