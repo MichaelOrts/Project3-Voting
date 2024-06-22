@@ -347,7 +347,7 @@ describe("Voting contract", function () {
 
       await voting.tallyVotes();
 
-      expect(await voting.winningProposalID()).to.equal(1);
+      expect(await voting.winningProposalID()).to.equal(2);
     });
 
     it("Should tally votes (without any votes)", async function () {

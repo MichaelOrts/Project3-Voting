@@ -37,8 +37,6 @@ contract Voting is Ownable {
     Proposal[] proposalsArray;
     mapping(address => Voter) voters;
     uint public winningProposalID;
-    uint private maxVoteCount;
-    uint[] private leadingProposals;
 
     /*************************************
      *              Events                *
@@ -77,6 +75,7 @@ contract Voting is Ownable {
         Get a voter by his address
         Trigger an error if this address isn't registered
     */
+    /// @param _addr voter address
     /// @return Voter  The voter corresponding to the given address
     function getVoter(
         address _addr
@@ -88,6 +87,7 @@ contract Voting is Ownable {
         Get a proposal from the given id
         Return empty value if proposal doesn't exists
     */
+    /// @param _id proposal id
     /// @return Proposal  The proposal corresponding to the given id
     function getOneProposal(
         uint _id
@@ -98,7 +98,8 @@ contract Voting is Ownable {
     /** @notice
         Adds a voter to the list
         Will trigger an error if the address has already been added to the whitelist
-        Only the contract's owner can call this metho
+        Only the contract's owner can call this method
+        Emits VoterRegistered event with _addr
     */
     /// @param _addr The address to add to the whitelist
     function addVoter(address _addr) external onlyOwner {
@@ -115,6 +116,7 @@ contract Voting is Ownable {
     /** @notice 
         Allows whitelisted users to make proposal, when the proposal registration is open, and if the given proposal isn't empty
         Only whitelisted voters can make a proposal
+        Emits ProposalRegistered with its id
     */
     /// @param _desc The voter's proposal description
     function addProposal(string calldata _desc) external onlyVoters {
@@ -139,6 +141,8 @@ contract Voting is Ownable {
         Allows whitelisted users to vote, when voting time is active, and if he has'nt already voted
         Proposal ids goes from 1 to 2^256.
         Only whitelisted voters can make a vote
+        Updates directly the winning proposal if numVotes is greater
+        Emits Voted with address voter and voted proposal id
     */
     /// @param _id The voter's proposal id vote
     function setVote(uint _id) external onlyVoters {
@@ -154,12 +158,8 @@ contract Voting is Ownable {
         proposalsArray[_id].voteCount++;
 
         // Handle tie vote and compute the winning proposal
-        if (proposalsArray[_id].voteCount > maxVoteCount) {
-            maxVoteCount = proposalsArray[_id].voteCount;
+        if (proposalsArray[_id].voteCount > proposalsArray[winningProposalID].voteCount) {
             winningProposalID = _id;
-            leadingProposals = [_id];
-        } else if (proposalsArray[_id].voteCount == maxVoteCount) {
-            leadingProposals.push(_id);
         }
 
         emit Voted(msg.sender, _id);
@@ -235,8 +235,7 @@ contract Voting is Ownable {
     }
 
     /** @notice 
-        Checks if the workflow status is OK, compute the winning proposal from voters, and change the workflow status
-        If there hasn't been any vote, or a tie vote, the last one on the list will be considered as the winning one
+        Checks if the workflow status is OK, finalizes the winning proposal from voters, and change the workflow status
         Only the contract's owner can call this method
     */
     function tallyVotes() external onlyOwner {
@@ -244,11 +243,6 @@ contract Voting is Ownable {
             workflowStatus == WorkflowStatus.VotingSessionEnded,
             "Current status is not voting session ended"
         );
-
-        // Handle tie vote: Choose the last one in the leading proposals list
-        if (leadingProposals.length > 1) {
-            winningProposalID = leadingProposals[leadingProposals.length - 1];
-        }
 
         workflowStatus = WorkflowStatus.VotesTallied;
         emit WorkflowStatusChange(
