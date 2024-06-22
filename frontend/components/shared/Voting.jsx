@@ -7,6 +7,7 @@ import { parseAbi } from "viem";
 
 import { hardhatClient as publicClient } from "@/utils/client";
 
+import Voter from "./Voter";
 import Event from "./Event";
 import VotingStates from "./VotingStates";
 
@@ -15,6 +16,7 @@ const Voting = () => {
     const { address } = useAccount();
 
     const [events, setEvents] = useState([]);
+    const [votersAddress, setVotersAddress] = useState([]);
 
     const { data: workflowStatus, refetch } = useReadContract({
         address: contractAddress,
@@ -63,6 +65,9 @@ const Voting = () => {
                 proposalId: log.args.proposalId?.toString()
             })
         ))
+        setVotersAddress(eventsLog.filter(log => (log.eventName==="VoterRegistered")).map(
+            log => (log.args.voterAddress)
+        ))
       }
 
       useEffect(() => {
@@ -95,6 +100,14 @@ const Voting = () => {
 
     return (
         <div>
+            <h2 className="mb-4 text-4xl">Voters</h2>
+            <div className="flex flex-col w-full">
+                {votersAddress.length > 0 && votersAddress.map((voterAddress) => {
+                    return (
+                        <Voter voterAddress={voterAddress} key={crypto.randomUUID()}/>
+                    )
+                })}
+            </div>
             <h2 className="mb-4 text-4xl">Events</h2>
             <div className="flex flex-col w-full">
                 {events.length > 0 && events.map((event) => {
