@@ -49,7 +49,7 @@ export default function Home() {
   //const isOwner = ownerAddress === useAccount().address;
   const isOwner = true;
   //const isVoter = AllVoters.includes(useAccount().address);
-  const isVoter = true;
+  const isVoter = false;
 
   const renderContent = () => {
     if (!isConnected) return <NotConnected />;
@@ -84,17 +84,11 @@ export default function Home() {
             <div className="flex flex-row justify-center my-24 space-x-20">
           
               <div className="w-3/6 bg-white p-4 rounded-lg shadow-xl">
-                <h2 className="text-xl text-center font-bold mb-2">Registered Voters</h2>
-                <ul className="list-disc pl-5">
-                  {allVoters.map((voter, index) => (
-                    <li key={index} className="text-gray-700">{voter}</li>
-                  ))}
-                </ul>
+                <RegisterVoter isOwner={isOwner} />
               </div>
 
               <div className="w-3/6 bg-white p-4 rounded-lg shadow-xl">
-                <h2 className="text-xl text-center font-bold mb-2">Proposals</h2>
-                  <Proposal />
+                  <Proposal isVoter={isVoter} />
               </div>
 
             </div>
