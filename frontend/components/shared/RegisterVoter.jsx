@@ -1,42 +1,36 @@
 'use client';
-import { useState, useEffect } from 'react';
-import { useWriteContract, useWaitForTransactionReceipt, useAccount, useReadContract } from 'wagmi';
+import { useState } from 'react';
+import { useWriteContract } from 'wagmi';
 import { contractAddress, contractAbi } from '@/constant';
 import { Input } from '../../components/ui/input';
 import { Button } from '../../components/ui/button';
+import useVoters from '@/hooks/useVoters';
+
 
 const RegisterVoter = ({isOwner}) => {
-  useAccount();
-  const [voterAddress, setVoterAddress] = useState('');
+  const [voterAddress, setVoterAddress] = useState();
   const [status, setStatus] = useState('');
-  const [allVoters, setAllVoters] = useState([]);
+  const { votersAddress } = useVoters();
 
-  const { data: votersData, isError: isVotersError } = useReadContract({
-    address: contractAddress,
-    abi: contractAbi,
-    functionName: 'getAllVoters',
-  });
+  const { writeContract } = useWriteContract()
 
-  const { data: hash, error, isPending: setIsPending, writeContract } = useWriteContract({
-    address: contractAddress,
-    abi: contractAbi,
-    functionName: 'addVoter',
-    args: [voterAddress]
-  });
-
-  const { isLoading: isConfirming, isSuccess, error: errorConfirmation } = useWaitForTransactionReceipt({ hash });
-
-  useEffect(() => {
-    if (votersData) {
-      setAllVoters(votersData);
-    }
-  }, [votersData]);
+  let isConfirming = false;
 
   const handleAddVoter = async () => {
     try {
-      await writeContract();
+      isConfirming = true;
+      await writeContract({
+      address: contractAddress,
+      abi: contractAbi,
+      functionName: 'addVoter',
+      args: [voterAddress],
+      });
+      
       setStatus('Voter added successfully');
+      setVoterAddress('');
+      isConfirming = false;
     } catch (error) {
+        console.log('error', error);
       setStatus(`Error: ${error.message}`);
     }
   };
@@ -44,8 +38,8 @@ const RegisterVoter = ({isOwner}) => {
   return (
     <div className="flex flex-col items-center">
       <h2 className="text-xl font-bold mb-2 mt-4">Registered Voters</h2>
-      <ul className="list-disc pl-5">
-        {allVoters.map((voter, index) => (
+      <ul className="list-disc m-2 pl-5">
+        {votersAddress.map((voter, index) => (
           <li key={index} className="text-gray-700">{voter}</li>
         ))}
       </ul>
@@ -57,7 +51,7 @@ const RegisterVoter = ({isOwner}) => {
         placeholder="Voter Address" 
         value={voterAddress} 
         onChange={(e) => setVoterAddress(e.target.value)} 
-        className="mb-2 p-2 border border-gray-300 rounded w-3/6"
+        className="mt-8 mb-4 p-2 border border-gray-300 rounded w-3/6"
         />
         <Button
           onClick={handleAddVoter}
@@ -66,7 +60,7 @@ const RegisterVoter = ({isOwner}) => {
         >
           {isConfirming ? 'Submitting...' : 'Add Voter'}
         </Button>
-        {status && <p className="mt-2 text-sm text-red-500">{status}</p>}
+        {status && <p className="mt-2 text-sm text-green-500">{status}</p>}
       </>
       ) : (
         <></>

@@ -6,7 +6,6 @@ import { Input } from '../../components/ui/input';
 import { Button } from '../../components/ui/button';
 
 const Proposal = ({isVoter}) => {
-  const { address } = useAccount();
   const [proposal, setProposal] = useState('');
   const [status, setStatus] = useState('');
   const [allProposals, setAllProposals] = useState([]);
@@ -66,7 +65,7 @@ const Proposal = ({isVoter}) => {
         >
             {isConfirming ? 'Submitting...' : 'Add Proposal'}
         </Button>
-        {status && <p className="mt-2 text-sm text-red-500">{status}</p>}
+        {status && <p className="mt-2 text-sm text-green-500">{status}</p>}
         </>
         ) : (
            <></>
