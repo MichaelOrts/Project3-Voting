@@ -15,10 +15,6 @@ body {
   min-height: 100vh;
 }
 
-.container {
-  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
-}
-
 #__next {
   display: flex;
   flex-direction: column;

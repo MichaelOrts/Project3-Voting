@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 
 const UserRole = ({ isOwner, isVoter }) => {
   const [role, setRole] = useState('');
@@ -15,14 +14,12 @@ const UserRole = ({ isOwner, isVoter }) => {
   }, [isOwner, isVoter]);
 
   return (
-    <Card className="my-4 px-52 bg-gray-100 rounded-md shadow-2xl border-solid border-2 border-blue-400">
-      <CardHeader>
-        <CardTitle className="text-xl font-semibold">Your Role</CardTitle>
-      </CardHeader>
-      <CardContent className="text-lg text-center">
-        {role}
-      </CardContent>
-    </Card> 
+    <>
+      <div className="bg-white rounded-lg shadow-xl w-1/6 m-auto mt-12 py-5">
+        <h2 className="text-xl text-center font-bold">Your Role</h2>
+        <div className="text-lg text-center">{role}</div>
+      </div>
+    </>
   );   
 };
 

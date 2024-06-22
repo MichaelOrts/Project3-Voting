@@ -44,8 +44,8 @@ export default function Home() {
 
   //const workflowStatus = workflowStatusData || 0;
   const workflowStatus = 0;
-  //const AllVoters = getAllVoters || [];
-  const AllVoters = [];
+  //const allVoters = getAllVoters || [];
+  const allVoters = [];
   //const isOwner = ownerAddress === useAccount().address;
   const isOwner = true;
   //const isVoter = AllVoters.includes(useAccount().address);
@@ -55,17 +55,17 @@ export default function Home() {
     if (!isConnected) return <NotConnected />;
 
     switch (workflowStatus) {
-      case 1:
+      case 0:
         return isOwner ? <RegisterVoter /> : <div>Registering Voters</div>;
-      case 2:
+      case 1:
         return isOwner || isVoter ? <Proposal /> : <div>Proposals Registration Started</div>;
-      case 3:
+      case 2:
         return <div>Proposals Registration Ended</div>;
-      case 4:
+      case 3:
         return isOwner || isVoter ? <Voting /> : <div>Voting Session Started</div>;
-      case 5:
+      case 4:
         return <div>Voting Session Ended</div>;
-      case 6:
+      case 5:
         return <WinningProposal />;
       default:
         return null;
@@ -77,9 +77,29 @@ export default function Home() {
     <>
       {isConnected ? (
         <>
-          <ProgressBar currentStep={workflowStatus} />
-          <UserRole isOwner={isOwner} isVoter={isVoter} />
-          {renderContent()}
+          <div className="container">
+            <ProgressBar currentStep={workflowStatus} />
+            <UserRole isOwner={isOwner} isVoter={isVoter} />
+
+            <div className="flex flex-row justify-center my-24 space-x-20">
+          
+              <div className="w-3/6 bg-white p-4 rounded-lg shadow-xl">
+                <h2 className="text-xl text-center font-bold mb-2">Registered Voters</h2>
+                <ul className="list-disc pl-5">
+                  {allVoters.map((voter, index) => (
+                    <li key={index} className="text-gray-700">{voter}</li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="w-3/6 bg-white p-4 rounded-lg shadow-xl">
+                <h2 className="text-xl text-center font-bold mb-2">Proposals</h2>
+                  <Proposal />
+              </div>
+
+            </div>
+      
+          </div>
         </>
       ) : (
         <NotConnected />
