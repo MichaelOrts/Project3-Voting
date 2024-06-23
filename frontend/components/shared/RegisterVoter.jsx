@@ -8,9 +8,9 @@ import useVoters from '@/hooks/useVoters';
 
 
 const RegisterVoter = ({isOwner, workflowStatus}) => {
-  const [voterAddress, setVoterAddress] = useState();
+  const [voterAddress, setVoterAddress] = useState('');
   const [status, setStatus] = useState('');
-  const { votersAddress } = useVoters();
+  const { votersAddress } = useVoters([]);
 
   const { writeContract } = useWriteContract()
 

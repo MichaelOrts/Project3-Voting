@@ -9,7 +9,7 @@ import useProposals from '@/hooks/useProposals';
 import useVotes from '@/hooks/useVotes';
 
 const Proposal = ({isVoter, workflowStatus}) => {
-  const [proposal, setProposal] = useState();
+  const [proposal, setProposal] = useState('');
   const [status, setStatus] = useState('');
   const { proposals } = useProposals();
   const { votes } = useVotes();

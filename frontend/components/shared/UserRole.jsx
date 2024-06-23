@@ -14,15 +14,14 @@ const UserRole = ({ voterAddress, isOwner, isVoter }) => {
 
     const [role, setRole] = useState('');
     const { address } = useAccount();
-    
 
-    const { data: voter } = useReadContract({
-            address: contractAddress,
+    const voter = isVoter ? useReadContract({
+      address: contractAddress,
             abi: contractAbi,
             functionName: 'getVoter',
             args: [voterAddress],
             account: address
-    })
+        }) : null;
 
     useEffect(() => {
         if (isOwner) {
@@ -34,17 +33,7 @@ const UserRole = ({ voterAddress, isOwner, isVoter }) => {
         }
   }, [isOwner, isVoter]);
 
-//   return (
-//     <>
-//       <div className="bg-white rounded-lg shadow-xl w-1/6 m-auto mt-12 py-5">
-//         <h2 className="text-xl text-center font-bold">Your Role</h2>
-//         <div className="text-lg text-center">{role}</div>
-//       </div>
-//     </>
-//   );   
-// };
-    
-
+  
   return (
     <Card className="flex bg-white rounded-lg shadow-xl w-3/6 m-auto mt-12 py-5">
             <Badge className="flex flex-col items-start">
