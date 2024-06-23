@@ -1,5 +1,6 @@
 'use client';
 import React, { useEffect, useState } from 'react';
+import { UserRoleProvider } from '@/context/UserRoleContext';
 import NextWorkflowButton from '@/components/shared/NextWorkflowButton';
 import NotConnected from "@/components/shared/NotConnected";
 import ProgressBar from "@/components/shared/ProgressBar";
@@ -51,13 +52,14 @@ export default function Home() {
   
   return (
     <>
+      <UserRoleProvider>
       {isConnected ? (
         <>
           <div className="container">
             <ProgressBar workflowStatus={workflowStatus} />
-            <UserRole voterAddress={currentAddress} isOwner={isOwner} isVoter={isVoter} />
+            <UserRole isOwner={isOwner} isVoter={isVoter} />
             <p className='flex justify-center'>
-              {isOwner && <NextWorkflowButton workflowStatus={workflowStatus} />}
+              {isOwner && workflowStatus < 5 && <NextWorkflowButton workflowStatus={workflowStatus} />}
             </p>
             <div className="flex flex-row justify-center my-24 space-x-20">
               <div className="w-3/6 bg-white p-4 rounded-lg shadow-xl">
@@ -79,6 +81,7 @@ export default function Home() {
       ) : (
         <NotConnected />
       )}
+      </UserRoleProvider>
     </>
   );
 }

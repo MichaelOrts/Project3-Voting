@@ -12,7 +12,7 @@ const steps = [
 
 const ProgressBar = ({ workflowStatus }) => {
   return (
-    <div className="flex items-center w-full max-w-6xl mx-auto">
+    <div className="flex items-center w-full mt-16 max-w-6xl mx-auto">
       {steps.map((step, index) => (
         <div key={step.name} className="flex-1 flex flex-col items-center mx-2">
           <div className="relative mb-2 flex items-center">

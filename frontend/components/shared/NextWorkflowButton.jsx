@@ -29,7 +29,7 @@ const NextWorkflowButton = ({workflowStatus}) => {
       default:
         functionName = null;
     }
-console.log('functionName', functionName)
+
     if (functionName) {
       await writeContract({
         address: contractAddress,

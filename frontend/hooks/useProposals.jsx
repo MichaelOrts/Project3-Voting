@@ -1,10 +1,17 @@
 import { useState, useEffect } from 'react';
 import { parseAbi } from 'viem';
-import { contractAddress } from '@/constant';
+import { contractAddress, contractAbi } from '@/constant';
 import { hardhatClient as publicClient } from '@/utils/client';
+import { useAccount } from 'wagmi';
+import useVoters from '@/hooks/useVoters';
+
 
 const useProposals = () => {
+  const { address } = useAccount();
+  const { votersAddress } = useVoters();
   const [proposals, setProposals] = useState([]);
+
+  const isVoter = votersAddress?.includes(address) || false;
 
   const getProposalEvents = async () => {
     const eventsLog = await publicClient.getLogs({
@@ -14,12 +21,23 @@ const useProposals = () => {
       toBlock: 'latest',
     });
 
-    setProposals(
-      eventsLog.map((log) => ({
-        id: log.args.proposalId.toString(),
-        description: log.args.description,  // Assuming description is part of event args
-      }))
-    );
+    const proposalIds = eventsLog.map((log) => log.args.proposalId.toString());
+
+    if(isVoter) {
+      // Fetch descriptions for each proposalId
+      const proposalsWithDescription = await Promise.all(proposalIds.map(async (id) => {
+        const description = await publicClient.readContract({
+          address: contractAddress,
+          abi: contractAbi,
+          functionName: 'getOneProposal',
+          args: [id],
+          account: address,
+        });
+        return { id, ...description };
+      }));
+  
+      setProposals(proposalsWithDescription);
+    }
   };
 
   useEffect(() => {
