@@ -1,25 +1,78 @@
 'use client';
-import { useState } from 'react';
-import { useWriteContract } from 'wagmi';
+import { useState, useEffect } from 'react';
+import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { contractAddress, contractAbi } from '@/constant';
+import { parseAbi } from 'viem';
 import { Input } from '../../components/ui/input';
 import { Button } from '../../components/ui/button';
 import useVoters from '@/hooks/useVoters';
 import Voter from "@/components/shared/Voter";
-
+import { useToast } from "../ui/use-toast";
+import { hardhatClient as publicClient } from '@/utils/client';
 
 const RegisterVoter = ({isOwner, workflowStatus}) => {
   const [voterAddress, setVoterAddress] = useState('');
   const [status, setStatus] = useState('');
-  const { votersAddress } = useVoters([]);
+//  const { votersAddress } = useVoters([]);
 
-  const { writeContract } = useWriteContract()
+  const [votersAddress, setVotersAddress] = useState([]);
 
-  let isConfirming = false;
+  const getVoterEvents = async () => {
+    const eventsLog = await publicClient.getLogs({
+      address: contractAddress,
+      events: parseAbi(['event VoterRegistered(address voterAddress)']),
+      fromBlock: 0n,
+      toBlock: 'latest',
+    });
+
+    setVotersAddress(
+      eventsLog.map((log) => log.args.voterAddress.toString())
+    );
+  };
+
+ 
+
+  const { data : hash, error, isPending, writeContract } = useWriteContract({
+    mutation: {
+     
+    
+     
+  }
+  });
+  const { toast } = useToast();
+
+  const { isLoading: isConfirming, isSuccess, error: errorConfirmation } = useWaitForTransactionReceipt({hash})
+
+  const refetchEverything = async() => {
+    getVoterEvents();
+}
+
+  useEffect(() => {
+    if(isSuccess) {
+        toast({
+            title: "Congratulations",
+            description: "Your transaction has been succedeed",
+            className: "bg-lime-200"
+        })
+        refetchEverything();
+    }
+    if(errorConfirmation) {
+        toast({
+            title: errorConfirmation.message,
+            status: error,
+            duration: 3000,
+            isClosable: true,
+            className: "bg-blue-200"
+        });
+    }
+}, [isSuccess, errorConfirmation])
+
+useEffect(() => {
+  getVoterEvents();
+}, []);
 
   const handleAddVoter = async () => {
-    try {
-      isConfirming = true;
+   
       await writeContract({
         address: contractAddress,
         abi: contractAbi,
@@ -29,19 +82,14 @@ const RegisterVoter = ({isOwner, workflowStatus}) => {
       
       setStatus('Voter added successfully');
       setVoterAddress('');
-      isConfirming = false;
-    } catch (error) {
-      setStatus(`Error: ${error.message}`);
-      isConfirming = false;
-    }
   };
 
   return (
     <div className="flex flex-col items-center">
       <h2 className="text-xl font-bold mb-2 mt-4">Voters</h2>
-      <ul className="list-disc m-2 pl-5">
+      <ul className="list-disc m-2 pl-5 w-5/6">
         {votersAddress.map((voter, index) => (
-            <Voter voterAddress={voterAddress} key={crypto.randomUUID()}/>
+            <Voter voterAddress={voter} key={crypto.randomUUID()}/>
         ))}
       </ul>
 
