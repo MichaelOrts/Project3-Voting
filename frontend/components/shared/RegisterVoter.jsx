@@ -25,7 +25,6 @@ const RegisterVoter = ({isOwner, workflowStatus}) => {
         abi: contractAbi,
         functionName: 'addVoter',
         args: [voterAddress],
-        nonce:2
       });
       
       setStatus('Voter added successfully');

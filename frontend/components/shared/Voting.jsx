@@ -10,10 +10,13 @@ import { hardhatClient as publicClient } from "@/utils/client";
 import Voter from "./Voter";
 import Event from "./Event";
 import VotingStates from "./VotingStates";
+import { useToast } from "../ui/use-toast";
 
 const Voting = () => {
 
     const { address } = useAccount();
+
+    const { toast } = useToast();
 
     const [events, setEvents] = useState([]);
     const [votersAddress, setVotersAddress] = useState([]);

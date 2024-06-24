@@ -12,6 +12,8 @@ import { useAccount, useReadContract } from "wagmi";
 import { contractAddress, contractAbi } from '../constant/index';
 import useVoters from '@/hooks/useVoters';
 
+import Voting from "@/components/shared/Voting"
+
 const contractConfig = {
   address: contractAddress,
   abi: contractAbi
@@ -76,6 +78,7 @@ export default function Home() {
                 </div>
               </div>
             )}
+            <Voting />
           </div>
         </>
       ) : (
