@@ -14,43 +14,34 @@ import { Table, TableCell, TableHead, TableHeader, TableRow, TableBody } from '.
 const Proposal = ({isVoter, workflowStatus}) => {
   const { voter } = useUserRole();
   const [proposal, setProposal] = useState('');
-  const [status, setStatus] = useState('');
   const { proposals, getProposalEvents } = useProposals();
   const { votes, getVoteEvents } = useVotes();
 
   const { toast } = useToast();
 
-  const {data: hash, error, isPending: setIsPending, writeContract } = useWriteContract()
+  const {data: hash, error, writeContract } = useWriteContract()
 
-  const { isLoading: _isConfirming, isSuccess, error: errorConfirmation } = useWaitForTransactionReceipt({hash})
+  const { isLoading: isConfirming, isSuccess, error: errorConfirmation } = useWaitForTransactionReceipt({hash})
 
   const hasVoted = voter?.hasVoted || false;
-  let isConfirming = false;
 
   const handleAddProposal = async () => {
-    try {
-      isConfirming = true;
-      await writeContract({
-        address: contractAddress,
-        abi: contractAbi,
-        functionName: 'addProposal',
-        args: [proposal],
-      });
-
-      setStatus('Proposal added successfully');
-      setProposal('');
-      setHasVoted(true);
-      isConfirming = false;
-    } catch (error) {
-      setStatus(`Error: ${error.message}`);
-      isConfirming = false;
-    }
+    await writeContract({
+      address: contractAddress,
+      abi: contractAbi,
+      functionName: 'addProposal',
+      args: [proposal],
+    });
+    setProposal('');
   };
 
   useEffect(() => {
     if(isSuccess) {
+      if(workflowStatus === 1){
         getProposalEvents();
+      }else if(workflowStatus === 3){
         getVoteEvents();
+      }
     }
     if(errorConfirmation) {
         toast({
@@ -63,28 +54,21 @@ const Proposal = ({isVoter, workflowStatus}) => {
 }, [isSuccess, errorConfirmation])
 
   const handleVote = async (proposalId) => {
-    try {
-      isConfirming = true;
-      await writeContract({
-        address: contractAddress,
-        abi: contractAbi,
-        functionName: 'setVote',
-        args: [proposalId]
-      });
-
-      setStatus('Vote cast successfully');
-      isConfirming = false;
-    } catch (error) {
-      setStatus(`Error: ${error.message}`);
-      isConfirming = false;
-    }
+    await writeContract({
+      address: contractAddress,
+      abi: contractAbi,
+      functionName: 'setVote',
+      args: [proposalId]
+    });
+    setHasVoted(true);
+    setStatus('Vote cast successfully');
   };
 
   useEffect(() => {
     if(isSuccess){
         toast({
           title: "Proposal Registered",
-          description: "id : " + proposals[proposals.length - 1],
+          description: "id : " + proposals[proposals.length - 1].id + "     description : " + proposals[proposals.length - 1].description,
           duration: 5000,
           className: "bg-lime-200"
       })
@@ -103,7 +87,7 @@ const Proposal = ({isVoter, workflowStatus}) => {
   }, [votes])
 
   return (
-    <div className="flex flex-col items-stretch">
+    <div className="flex flex-col items-center">
       <h2 className="text-xl text-center font-bold mb-2 mt-4">Proposals</h2>
       <Table>
         <TableHeader>
@@ -116,7 +100,7 @@ const Proposal = ({isVoter, workflowStatus}) => {
         <TableBody>
           {proposals.map((proposal, index) => (
             <TableRow key={crypto.randomUUID()}>
-              <TableCell>{index}</TableCell>
+              <TableCell>{index + 1}</TableCell>
               <TableCell>{proposal?.description}</TableCell>
               <TableCell>{proposal?.voteCount.toString()}</TableCell>
               {workflowStatus === 3 && isVoter && (
@@ -132,6 +116,29 @@ const Proposal = ({isVoter, workflowStatus}) => {
           ))}
         </TableBody>
     </Table>
+    {isVoter && workflowStatus === 1 ? (
+        <>
+        <Input 
+        type="text" 
+        placeholder="Enter your proposal" 
+        value={proposal} 
+        onChange={(e) => setProposal(e.target.value)} 
+        className="mb-2 p-2 border border-gray-300 rounded w-3/6"
+        />
+        <Button
+          onClick={handleAddProposal}
+          className="bg-blue-500 text-white px-4 py-2 rounded w-3/6"
+          disabled={isConfirming || !proposal}
+        >
+          {isConfirming ? 'Submitting...' : 'Add Proposal'}
+        </Button>
+      </>
+      ) : (
+         <>
+         {workflowStatus != 1 && <p className='text-red-500'>Adding proposals is currently closed</p>}
+         {!isVoter && <p className='text-red-500 text-center'>Only voter can add proposals</p>}
+        </>
+      )}
     </div>
   );
 };
