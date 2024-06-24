@@ -10,8 +10,13 @@ const useProposals = () => {
   const { address } = useAccount();
   const { votersAddress } = useVoters();
   const [proposals, setProposals] = useState([]);
+  const [isVoter, setIsVoter] = useState(false);
 
-  const isVoter = votersAddress?.includes(address) || false;
+    useEffect(() => {
+    if (votersAddress && address) {
+      setIsVoter(votersAddress.includes(address));
+    }
+  }, [votersAddress, address, isVoter]);
 
   const getProposalEvents = async () => {
     const eventsLog = await publicClient.getLogs({
@@ -42,7 +47,7 @@ const useProposals = () => {
 
   useEffect(() => {
     getProposalEvents();
-  }, []);
+  }, [votersAddress, address, isVoter]);
 
   return { proposals, getProposalEvents };
 };

@@ -115,7 +115,7 @@ const Proposal = ({isVoter, workflowStatus}) => {
               {workflowStatus === 3 && isVoter && (
                 <Button
                   onClick={() => handleVote(proposal.id)}
-                  className="w-1/6 bg-green-500 text-white px-4 py-2 rounded-lg m-2"
+                  className="w-1/6 bg-green-500 text-white px-8 py-2 rounded-lg m-2"
                   disabled={isConfirming || hasVoted}
                 >
                   {isConfirming ? 'Voting...' : 'Vote'}
@@ -125,49 +125,6 @@ const Proposal = ({isVoter, workflowStatus}) => {
           ))}
         </TableBody>
     </Table>
-      <ul className="list-disc p-4">
-        {proposals.map((proposal, index) => (
-
-          <li key={index} className="text-gray-700 flex items-center">
-            <span className='w-4/6'><strong>{index + 1}/</strong> {proposal.description}</span> 
-            <span className='w-1/6'><strong>Votes: </strong> {proposal?.voteCount?.toString() || 0}</span>
-            {workflowStatus === 3 && isVoter && (
-              <Button
-                onClick={() => handleVote(proposal.id)}
-                className="w-1/6 bg-green-500 text-white px-4 py-2 rounded-lg m-2"
-                disabled={isConfirming || hasVoted}
-              >
-                {isConfirming ? 'Voting...' : 'Vote'}
-              </Button>
-            )}
-          </li>
-        ))}
-      </ul>
-
-        {isVoter && workflowStatus === 1 ? (
-            <>
-        <Input 
-            type="text" 
-            placeholder="Enter your proposal" 
-            value={proposal} 
-            onChange={(e) => setProposal(e.target.value)} 
-            className="mb-2 p-2 border border-gray-300 rounded w-3/6"
-        />
-        <Button
-            onClick={handleAddProposal}
-            className="bg-blue-500 text-white px-4 py-2 rounded w-3/6"
-            disabled={isConfirming || !proposal}
-        >
-            {isConfirming ? 'Submitting...' : 'Add Proposal'}
-        </Button>
-        {status && <p className="mt-2 text-sm text-green-500">{status}</p>}
-        </>
-        ) : (
-           <>
-            {workflowStatus != 1 && <p className='text-red-500 text-center'>Adding proposals is currently closed</p>}
-            {!isVoter && <p className='text-red-500 text-center'>Only voters can add proposals</p>}
-           </>
-        )}
     </div>
   );
 };
