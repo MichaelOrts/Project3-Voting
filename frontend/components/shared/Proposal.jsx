@@ -6,6 +6,7 @@ import { Input } from '../../components/ui/input';
 import { Button } from '../../components/ui/button';
 import useProposals from '@/hooks/useProposals';
 import { useUserRole } from '@/context/UserRoleContext';
+import useVotes from '@/hooks/useVotes'
 
 import { useToast } from "../ui/use-toast";
 import { Table, TableCell, TableHead, TableHeader, TableRow, TableBody } from '../ui/table';
@@ -14,20 +15,12 @@ const Proposal = ({isVoter, workflowStatus}) => {
   const { voter } = useUserRole();
   const [proposal, setProposal] = useState('');
   const [status, setStatus] = useState('');
-  const { proposals } = useProposals();
+  const { proposals, getProposalEvents } = useProposals();
+  const { votes, getVoteEvents } = useVotes();
 
   const { toast } = useToast();
 
-  const {data: hash, error, isPending: setIsPending, writeContract } = useWriteContract({
-    /* mutation: {
-         onSuccess: () => {
-
-         },
-         onError: (error) => {
-
-         }
-     }*/
- })
+  const {data: hash, error, isPending: setIsPending, writeContract } = useWriteContract()
 
   const { isLoading: _isConfirming, isSuccess, error: errorConfirmation } = useWaitForTransactionReceipt({hash})
 
@@ -54,24 +47,16 @@ const Proposal = ({isVoter, workflowStatus}) => {
     }
   };
 
-  const refetchEverything = async() => {
-    //await refetch();
-}
-
   useEffect(() => {
     if(isSuccess) {
-        toast({
-            title: "Congratulations",
-            description: "Your transaction has been succedeed",
-            className: "bg-lime-200"
-        })
-        refetchEverything();
+        getProposalEvents();
+        getVoteEvents();
     }
     if(errorConfirmation) {
         toast({
             title: errorConfirmation.message,
             status: error,
-            duration: 3000,
+            duration: 5000,
             isClosable: true
         });
     }
@@ -94,6 +79,28 @@ const Proposal = ({isVoter, workflowStatus}) => {
       isConfirming = false;
     }
   };
+
+  useEffect(() => {
+    if(isSuccess){
+        toast({
+          title: "Proposal Registered",
+          description: "id : " + proposals[proposals.length - 1],
+          duration: 5000,
+          className: "bg-lime-200"
+      })
+    }
+  }, [proposals])
+
+  useEffect(() => {
+    if(isSuccess){
+        toast({
+          title: "Voted",
+          description: "voter : " + votes[votes.length - 1].voter + "      proposal id : " + votes[votes.length - 1].proposalId,
+          duration: 5000,
+          className: "bg-lime-200"
+      })
+    }
+  }, [votes])
 
   return (
     <div className="flex flex-col items-stretch">
