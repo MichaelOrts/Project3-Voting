@@ -23,7 +23,7 @@ const Proposal = ({isVoter, workflowStatus}) => {
 
   const { isLoading: isConfirming, isSuccess, error: errorConfirmation } = useWaitForTransactionReceipt({hash})
 
-  const hasVoted = voter?.hasVoted || false;
+  const [hasVoted, setHasVoted] = useState(voter?.hasVoted || false);
 
   const handleAddProposal = async () => {
     await writeContract({
@@ -80,6 +80,7 @@ const Proposal = ({isVoter, workflowStatus}) => {
           duration: 5000,
           className: "bg-lime-200"
       })
+      setHasVoted(true);
     }
   }, [votes])
 
