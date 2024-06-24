@@ -15,8 +15,6 @@ import useWorkflowStatus from '@/hooks/useWorkflowStatus';
 
 import { useToast } from "@/components/ui/use-toast";
 
-import Voting from "@/components/shared/Voting"
-
 const contractConfig = {
   address: contractAddress,
   abi: contractAbi
@@ -85,7 +83,6 @@ export default function Home() {
                 </div>
               </div>
             )}
-            <Voting />
           </div>
         </>
       ) : (
