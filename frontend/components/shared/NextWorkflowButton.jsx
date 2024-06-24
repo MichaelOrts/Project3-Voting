@@ -1,11 +1,19 @@
+import { useState, useEffect } from 'react';
 import { Button } from '../../components/ui/button';
-import { useWriteContract } from 'wagmi';
+import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { contractAddress, contractAbi } from '@/constant';
+import { useToast } from "../ui/use-toast";
+import useWorkflowStatus from '@/hooks/useWorkflowStatus';
 
 const NextWorkflowButton = ({workflowStatus}) => {
-  const { writeContract } = useWriteContract()
 
-  let isConfirming = false;
+  const { workflowStatusEvents, getWorkflowStatusEvents } = useWorkflowStatus([]);
+
+  const { toast } = useToast();
+
+  const { data : hash, error, writeContract } = useWriteContract();
+
+  const { isLoading: isConfirming, isSuccess, error: errorConfirmation } = useWaitForTransactionReceipt({hash})
 
   const advanceWorkflow = async (workflowStatus) => {
     let functionName;
@@ -41,15 +49,35 @@ const NextWorkflowButton = ({workflowStatus}) => {
 
 
   const handleNextWorkflow = async () => {
-    try {
-      isConfirming = true;
       await advanceWorkflow(workflowStatus);
-
-      isConfirming = false;
-    } catch (error) {
-      isConfirming = false;
-    }
   };
+
+  useEffect(() => {
+    if(isSuccess) {
+        getWorkflowStatusEvents();
+    }
+    if(errorConfirmation) {
+        toast({
+            title: errorConfirmation.message,
+            status: error,
+            duration: 5000,
+            isClosable: true,
+            className: "bg-red-200"
+        });
+    }
+}, [isSuccess, errorConfirmation])
+
+useEffect(() => {
+  if(isSuccess){
+      toast({
+        title: "Workflow Status Change",
+        description: "previous status : " + workflowStatusEvents[workflowStatusEvents.length - 1].previousStatus 
+                          + "     new status : " + workflowStatusEvents[workflowStatusEvents.length - 1].newStatus,
+        duration: 5000,
+        className: "bg-lime-200"
+    })
+  }
+}, [workflowStatusEvents])
 
 
   return (

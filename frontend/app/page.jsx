@@ -11,6 +11,9 @@ import WinningProposal from "@/components/shared/WinningProposal";
 import { useAccount, useReadContract } from "wagmi";
 import { contractAddress, contractAbi } from '../constant/index';
 import useVoters from '@/hooks/useVoters';
+import useWorkflowStatus from '@/hooks/useWorkflowStatus';
+
+import { useToast } from "@/components/ui/use-toast";
 
 import Voting from "@/components/shared/Voting"
 
@@ -22,6 +25,12 @@ const contractConfig = {
 export default function Home() {
   const { isConnected, address: currentAddress } = useAccount();
   const { votersAddress } = useVoters();
+  const { workflowStatusEvents, getWorkflowStatusEvents } = useWorkflowStatus();
+
+  const { toast } = useToast();
+
+  const [isMounted, setIsMounted] = useState(false);
+
   const { data: workflowStatusData, isError: isWorkflowStatusError } = useReadContract({
     ...contractConfig,
     functionName: 'workflowStatus',
@@ -31,8 +40,6 @@ export default function Home() {
     ...contractConfig,
     functionName: 'owner',
   });
-
-  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
