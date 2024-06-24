@@ -30,7 +30,7 @@ const Event = ({ event }) => {
             <Badge className={getColor(event.name)}>{event.name}</Badge>
             {showParam('Voter', event.voter)}
             {showParam('Previous Status', event.previousStatus)}
-            {showParam('New Status', event.previousStatus)}
+            {showParam('New Status', event.newStatus)}
             {showParam('Proposal Id', event.proposalId)}
         </div>
     </Card>

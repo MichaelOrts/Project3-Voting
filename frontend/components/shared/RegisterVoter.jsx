@@ -5,6 +5,7 @@ import { contractAddress, contractAbi } from '@/constant';
 import { Input } from '../../components/ui/input';
 import { Button } from '../../components/ui/button';
 import useVoters from '@/hooks/useVoters';
+import Voter from "@/components/shared/Voter";
 
 
 const RegisterVoter = ({isOwner, workflowStatus}) => {
@@ -24,6 +25,7 @@ const RegisterVoter = ({isOwner, workflowStatus}) => {
         abi: contractAbi,
         functionName: 'addVoter',
         args: [voterAddress],
+        nonce:2
       });
       
       setStatus('Voter added successfully');
@@ -40,7 +42,7 @@ const RegisterVoter = ({isOwner, workflowStatus}) => {
       <h2 className="text-xl font-bold mb-2 mt-4">Voters</h2>
       <ul className="list-disc m-2 pl-5">
         {votersAddress.map((voter, index) => (
-          <li key={index} className="text-gray-700">{voter}</li>
+            <Voter voterAddress={voterAddress} key={crypto.randomUUID()}/>
         ))}
       </ul>
 
