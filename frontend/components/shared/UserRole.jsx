@@ -35,16 +35,6 @@ const UserRole = ({ isOwner, isVoter })  => {
                     <Label className="text-sm m-2 text-blue-500">{role}</Label>
                 </div>
             </Badge>
-            <Badge className="flex flex-col items-start">
-                <div>
-                    <Label className="text-base m-2 font-bold">Has Voted</Label>
-                    <Label className="text-sm m-2 text-blue-500">{voter?.hasVoted?.toString() || "false"}</Label>
-                </div>
-                <div>
-                    <Label className="text-base m-2 font-bold">Voted Proposal Id</Label>
-                    <Label className="text-sm m-2 text-blue-500">{voter?.votedProposalId?.toString() || 0}</Label>
-                </div>
-            </Badge>
         </Card>
     )
 }
