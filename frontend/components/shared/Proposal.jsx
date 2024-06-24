@@ -37,11 +37,10 @@ const Proposal = ({isVoter, workflowStatus}) => {
 
   useEffect(() => {
     if(isSuccess) {
-      if(workflowStatus === 1){
-        getProposalEvents();
-      }else if(workflowStatus === 3){
+      if(workflowStatus === 3){
         getVoteEvents();
       }
+      getProposalEvents();
     }
     if(errorConfirmation) {
         toast({
@@ -60,12 +59,10 @@ const Proposal = ({isVoter, workflowStatus}) => {
       functionName: 'setVote',
       args: [proposalId]
     });
-    setHasVoted(true);
-    setStatus('Vote cast successfully');
   };
 
   useEffect(() => {
-    if(isSuccess){
+    if(workflowStatus === 1 && isSuccess){
         toast({
           title: "Proposal Registered",
           description: "id : " + proposals[proposals.length - 1].id + "     description : " + proposals[proposals.length - 1].description,
@@ -136,7 +133,7 @@ const Proposal = ({isVoter, workflowStatus}) => {
       ) : (
          <>
          {workflowStatus != 1 && <p className='text-red-500'>Adding proposals is currently closed</p>}
-         {!isVoter && <p className='text-red-500 text-center'>Only voter can add proposals</p>}
+         {!isVoter && <p className='text-red-500 text-center'>Only voter can add proposals or vote</p>}
         </>
       )}
     </div>
