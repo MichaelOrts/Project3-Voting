@@ -2,50 +2,24 @@
 import { useState, useEffect } from 'react';
 import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { contractAddress, contractAbi } from '@/constant';
-import { parseAbi } from 'viem';
 import { Input } from '../../components/ui/input';
 import { Button } from '../../components/ui/button';
 import useVoters from '@/hooks/useVoters';
 import Voter from "@/components/shared/Voter";
 import { useToast } from "../ui/use-toast";
-import { hardhatClient as publicClient } from '@/utils/client';
 
 const RegisterVoter = ({isOwner, workflowStatus}) => {
   const [voterAddress, setVoterAddress] = useState('');
-  const [status, setStatus] = useState('');
-//  const { votersAddress } = useVoters([]);
+  const { votersAddress, getVoterEvents } = useVoters([]);
 
-  const [votersAddress, setVotersAddress] = useState([]);
-
-  const getVoterEvents = async () => {
-    const eventsLog = await publicClient.getLogs({
-      address: contractAddress,
-      events: parseAbi(['event VoterRegistered(address voterAddress)']),
-      fromBlock: 0n,
-      toBlock: 'latest',
-    });
-
-    setVotersAddress(
-      eventsLog.map((log) => log.args.voterAddress.toString())
-    );
-  };
-
- 
 
   const { data : hash, error, isPending, writeContract } = useWriteContract({
-    mutation: {
-     
-    
-     
-  }
+    mutation: {}
   });
+
   const { toast } = useToast();
 
   const { isLoading: isConfirming, isSuccess, error: errorConfirmation } = useWaitForTransactionReceipt({hash})
-
-  const refetchEverything = async() => {
-    getVoterEvents();
-}
 
   useEffect(() => {
     if(isSuccess) {
@@ -54,7 +28,7 @@ const RegisterVoter = ({isOwner, workflowStatus}) => {
             description: "Your transaction has been succedeed",
             className: "bg-lime-200"
         })
-        refetchEverything();
+        getVoterEvents();
     }
     if(errorConfirmation) {
         toast({
@@ -62,14 +36,11 @@ const RegisterVoter = ({isOwner, workflowStatus}) => {
             status: error,
             duration: 3000,
             isClosable: true,
-            className: "bg-blue-200"
+            className: "bg-red-200"
         });
     }
 }, [isSuccess, errorConfirmation])
 
-useEffect(() => {
-  getVoterEvents();
-}, []);
 
   const handleAddVoter = async () => {
    
@@ -80,7 +51,6 @@ useEffect(() => {
         args: [voterAddress],
       });
       
-      setStatus('Voter added successfully');
       setVoterAddress('');
   };
 
@@ -109,7 +79,6 @@ useEffect(() => {
         >
           {isConfirming ? 'Submitting...' : 'Add Voter'}
         </Button>
-        {status && <p className="mt-2 text-sm text-green-500">{status}</p>}
       </>
       ) : (
          <>
