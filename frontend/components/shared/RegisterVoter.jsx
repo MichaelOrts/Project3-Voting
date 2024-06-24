@@ -9,37 +9,41 @@ import Voter from "@/components/shared/Voter";
 import { useToast } from "../ui/use-toast";
 
 const RegisterVoter = ({isOwner, workflowStatus}) => {
+
   const [voterAddress, setVoterAddress] = useState('');
   const { votersAddress, getVoterEvents } = useVoters([]);
 
-
-  const { data : hash, error, isPending, writeContract } = useWriteContract({
-    mutation: {}
-  });
-
   const { toast } = useToast();
+
+  const { data : hash, error, writeContract } = useWriteContract();
 
   const { isLoading: isConfirming, isSuccess, error: errorConfirmation } = useWaitForTransactionReceipt({hash})
 
   useEffect(() => {
     if(isSuccess) {
-        toast({
-            title: "Congratulations",
-            description: "Your transaction has been succedeed",
-            className: "bg-lime-200"
-        })
         getVoterEvents();
     }
     if(errorConfirmation) {
         toast({
             title: errorConfirmation.message,
             status: error,
-            duration: 3000,
+            duration: 5000,
             isClosable: true,
             className: "bg-red-200"
         });
     }
 }, [isSuccess, errorConfirmation])
+
+useEffect(() => {
+  if(isSuccess){
+  toast({
+    title: "Voter Registered",
+    description: "address : " + votersAddress[votersAddress.length - 1],
+    duration: 5000,
+    className: "bg-lime-200"
+})
+}
+}, [votersAddress])
 
 
   const handleAddVoter = async () => {
